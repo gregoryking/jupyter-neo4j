@@ -1,0 +1,72 @@
+#!/bin/bash
+
+conda install -y nodejs=10.13.0 yarn
+
+# enable jupyter_server_proxy
+jupyter serverextension enable --sys-prefix jupyter_server_proxy
+###############################################################
+#             moving to a local installation folder           #
+###############################################################
+
+mkdir -p /home/$USER/resources/local
+cd    /home/$USER/resources/local
+
+
+###############################################################
+#             neo4j installation commands                   #
+###############################################################
+
+
+echo "Installing Neo4j..."
+export NEO4J_VERSION=3.5.8
+echo "export NEO4J_VERSION=${NEO4J_VERSION}" >> /home/$USER/.bashrc
+echo "export NEO4J_VERSION=${NEO4J_VERSION}" >> /home/$USER/.profile
+
+export NEO4J_HOME=$(pwd)/neo4j-${NEO4J_VERSION}
+echo "export NEO4J_HOME=${NEO4J_HOME}"       >> /home/$USER/.bashrc
+echo "export NEO4J_HOME=${NEO4J_HOME}"       >> /home/$USER/.profile
+
+wget https://neo4j.com/artifact.php?name=neo4j-community-${NEO4J_VERSION}-unix.tar.gz -q          && \
+mv   artifact.php?name=neo4j-community-${NEO4J_VERSION}-unix.tar.gz neo4j-${NEO4J_VERSION}.tar.gz && \
+tar  -xvf neo4j-${NEO4J_VERSION}.tar.gz >/dev/null                                                && \
+rm   neo4j-${NEO4J_VERSION}.tar.gz                                                                && \
+mv   neo4j-community-${NEO4J_VERSION} neo4j-${NEO4J_VERSION}                                      && \
+wget https://github.com/neo4j-contrib/neo4j-apoc-procedures/releases/download/3.5.0.15/apoc-3.5.0.15-all.jar -q && \
+mv apoc-3.5.0.15-all.jar ${NEO4J_HOME}/plugins
+
+# adding bin and sbin to $path
+echo "export PATH=\$PATH:\$NEO4J_HOME/bin"  >> /home/$USER/.bashrc
+echo "export PATH=\$PATH:\$NEO4J_HOME/bin"  >> /home/$USER/.profile
+
+###############################################################
+#             vscode server installation                      #
+###############################################################
+
+cd    /home/$USER/resources/local
+
+export CODE_SERVER_VERSION=3.3.0
+echo "export CODE_SERVER_VERSION=${CODE_SERVER_VERSION}" >> /home/$USER/.bashrc
+echo "export CODE_SERVER_VERSION=${CODE_SERVER_VERSION}" >> /home/$USER/.profile
+
+export CODE_SERVER_HOME=$(pwd)/code-server-${CODE_SERVER_VERSION}
+echo "export CODE_SERVER_HOME=${CODE_SERVER_HOME}"       >> /home/$USER/.bashrc
+echo "export CODE_SERVER_HOME=${CODE_SERVER_HOME}"       >> /home/$USER/.profile
+
+# Download and install VSCode server
+# wget -q -O code-server.tar.gz https://github.com/cdr/code-server/releases/download/$CODE_SERVER_VERSION/code-server-$CODE_SERVER_VERSION-linux-x86_64.tar.gz                            
+wget -q -O code-server.tar.gz https://github.com/cdr/code-server/releases/download/v$CODE_SERVER_VERSION/code-server-$CODE_SERVER_VERSION-linux-amd64.tar.gz                            
+tar xzf code-server.tar.gz
+# mv code-server-${CODE_SERVER_VERSION}-linux-x86_64 code-server-$CODE_SERVER_VERSION
+mv code-server-$CODE_SERVER_VERSION-linux-amd64 code-server-$CODE_SERVER_VERSION
+
+rm -rf code-server.tar.gz
+
+# adding bin/ to $path
+echo "export PATH=\$PATH:\$CODE_SERVER_HOME/bin"   >> /home/$USER/.bashrc
+echo "export PATH=\$PATH:\$CODE_SERVER_HOME/bin"   >> /home/$USER/.profile
+
+source /home/$USER/.bashrc
+
+# Install neo4j proxy
+cd /home/$USER
+pip install -e.

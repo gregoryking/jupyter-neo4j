@@ -1,0 +1,4 @@
+#!/bin/bash
+
+cp /home/$USER/neo4j.conf    ${NEO4J_HOME}/conf/
+neo4j start 
